@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>减肥自律打卡</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        :root {
+            --primary: #7ECEC0;
+            --primary-light: #A8E6CF;
+            --secondary: #FFB5BA;
+            --accent: #FFD93D;
+            --text: #2D3436;
+            --light-text: #636E72;
+            --success: #6BCB77;
+            --border: #E8E8E8;
+        }
+
+        html, body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(180deg, #F0FFF4 0%, #FFF5F5 50%, #FFF9E6 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body {
+            padding-bottom: 75px;
+        }
+
+        /* 顶部 */
+        .header {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            padding: 25px 20px;
+            text-align: center;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .header .subtitle {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+
+        /* 目标卡片 */
+        .goal-card {
+            background: white;
+            border-radius: 16px;
+            padding: 18px 20px;
+            margin: -18px 15px 15px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .goal-item {
+            text-align: center;
+            flex: 1;
+        }
+
+        .goal-label {
+            font-size: 12px;
+            color: var(--light-text);
+            margin-bottom: 6px;
+        }
+
+        .goal-value {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .goal-value input {
+            width: 65px;
+            text-align: center;
+            border: none;
+            border-bottom: 2px solid var(--border);
+            background: transparent;
+            padding: 4px 6px;
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .goal-value input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .goal-unit {
+            font-size: 14px;
+            color: var(--light-text);
+        }
+
+        .goal-divider {
+            width: 1px;
+            height: 45px;
+            background: var(--border);
+        }
+
+        /* 页面容器 */
+        .page-container {
+            padding: 0 15px;
+        }
+
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* 卡片 */
+        .card {
+            background: white;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 14px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 日期导航 */
+        .date-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 5px 0;
+        }
+
+        .date-btn {
+            width: 44px;
+            height: 44px;
+            border: none;
+            background: #F0F0F0;
+            border-radius: 50%;
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            flex-shrink: 0;
+        }
+
+        .date-btn:active {
+            background: #E0E0E0;
+        }
+
+        .date-display {
+            text-align: center;
+            flex: 1;
+            padding: 0 10px;
+        }
+
+        .date-main {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .date-sub {
+            font-size: 13px;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+
+        /* 进度 */
+        .progress-section {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid var(--border);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #E8E8E8;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary) 0%, var(--success) 100%);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            font-size: 13px;
+        }
+
+        .progress-label {
+            color: var(--light-text);
+        }
+
+        .progress-value {
+            color: var(--text);
+            font-weight: 600;
+        }
+
+        /* 体重 */
+        .weight-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .weight-box {
+            text-align: center;
+        }
+
+        .weight-label {
+            font-size: 13px;
+            color: var(--light-text);
+            margin-bottom: 10px;
+        }
+
+        .weight-input {
+            width: 100%;
+            height: 55px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 22px;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text);
+            background: white;
+        }
+
+        .weight-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        .weight-change {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 500;
+            min-height: 16px;
+        }
+
+        .weight-change.down { color: var(--success); }
+        .weight-change.up { color: #E17055; }
+
+        /* 喝水 - 两排 */
+        .water-section {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .water-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+        }
+
+        .water-cup {
+            aspect-ratio: 1;
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .water-cup.filled {
+            background: linear-gradient(135deg, #81ECEC 0%, #00CEC9 100%);
+            border-color: #00CEC9;
+        }
+
+        .water-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-top: 1px solid var(--border);
+        }
+
+        .water-count {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .water-count span {
+            font-size: 28px;
+            color: var(--primary);
+        }
+
+        .water-target {
+            font-size: 13px;
+            color: var(--light-text);
+        }
+
+        /* 简化选择 */
+        .option-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .option-grid.two-col {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .option-btn {
+            padding: 14px 10px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            background: white;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            color: var(--text);
+        }
+
+        .option-btn.selected {
+            border-color: var(--primary);
+            background: rgba(126, 206, 192, 0.15);
+            font-weight: 600;
+        }
+
+        .option-btn .icon {
+            font-size: 24px;
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* 心情 */
+        .mood-grid {
+            display: flex;
+            justify-content: space-around;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .mood-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 8px;
+            border: 2px solid transparent;
+            border-radius: 12px;
+            background: transparent;
+            cursor: pointer;
+            transition: all 0.15s;
+            min-width: 55px;
+        }
+
+        .mood-btn.selected {
+            border-color: var(--secondary);
+            background: rgba(255, 181, 186, 0.2);
+        }
+
+        .mood-icon {
+            font-size: 26px;
+            line-height: 1;
+        }
+
+        .mood-label {
+            font-size: 10px;
+            color: var(--light-text);
+            margin-top: 4px;
+        }
+
+        .mood-btn.selected .mood-label {
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* 日记 */
+        .diary-input {
+            width: 100%;
+            height: 80px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 12px;
+            font-size: 14px;
+            resize: none;
+            background: white;
+        }
+
+        .diary-input:focus {
+            border-color: var(--primary);
+            outline: none;
+        }
+
+        /* 照片 */
+        .photo-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .photo-box {
+            aspect-ratio: 3/4;
+            border: 2px dashed #CCCCCC;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            overflow: hidden;
+            background: #FAFAFA;
+        }
+
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .photo-placeholder {
+            text-align: center;
+            color: var(--light-text);
+        }
+
+        .photo-placeholder .icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+
+        .photo-placeholder .label {
+            font-size: 12px;
+        }
+
+        .photo-tip {
+            font-size: 11px;
+            color: var(--light-text);
+            text-align: center;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* 打卡按钮 */
+        .checkin-btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 14px;
+            cursor: pointer;
+            margin-top: 20px;
+            margin-bottom: 15px;
+        }
+
+        .checkin-btn:active {
+            opacity: 0.9;
+        }
+
+        /* 弹窗 */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.6);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            padding: 20px;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 20px;
+            padding: 28px 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 100%;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            0% { transform: scale(0.85); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .modal-icon {
+            font-size: 60px;
+            margin-bottom: 15px;
+            animation: bounce 0.6s ease infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+
+        .modal-title {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 10px;
+        }
+
+        .modal-message {
+            font-size: 14px;
+            color: var(--light-text);
+            line-height: 1.6;
+            margin-bottom: 10px;
+        }
+
+        .modal-stats {
+            background: #F8F9FA;
+            border-radius: 12px;
+            padding: 15px;
+            margin: 18px 0;
+        }
+
+        .modal-stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 14px;
+        }
+
+        .modal-stat-label { color: var(--light-text); }
+        .modal-stat-value { font-weight: 600; color: var(--text); }
+
+        .modal-close {
+            padding: 14px 35px;
+            border: none;
+            background: var(--primary);
+            color: white;
+            border-radius: 25px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        /* 进度页 */
+        .stats-card {
+            border-radius: 14px;
+            padding: 18px;
+            color: white;
+            margin-bottom: 12px;
+        }
+
+        .stats-card.week {
+            background: linear-gradient(135deg, #FF9A9E 0%, #FECFEF 100%);
+        }
+
+        .stats-card.month {
+            background: linear-gradient(135deg, #A8E6CF 0%, #88D8B0 100%);
+        }
+
+        .stats-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 14px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+
+        /* 图表 */
+        .chart-box {
+            height: 200px;
+            margin: 12px 0;
+        }
+
+        /* 数据管理 */
+        .data-btn {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border);
+            background: white;
+            border-radius: 12px;
+            font-size: 14px;
+            color: var(--text);
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .data-tip {
+            font-size: 12px;
+            color: var(--light-text);
+            text-align: center;
+            margin-top: 12px;
+            line-height: 1.6;
+        }
+
+        /* 成就 */
+        .badge-section {
+            margin-bottom: 20px;
+        }
+
+        .badge-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 14px;
+        }
+
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 14px;
+        }
+
+        .badge-item {
+            text-align: center;
+            opacity: 0.35;
+            transition: all 0.3s;
+        }
+
+        .badge-item.unlocked {
+            opacity: 1;
+        }
+
+        .badge-icon {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #E8E8E8 0%, #D8D8D8 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            margin: 0 auto 8px;
+        }
+
+        .badge-item.unlocked .badge-icon {
+            background: linear-gradient(135deg, var(--accent) 0%, #FFC107 100%);
+            box-shadow: 0 4px 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .badge-name {
+            font-size: 11px;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        /* 底部导航 */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            display: flex;
+            box-shadow: 0 -3px 15px rgba(0,0,0,0.08);
+            z-index: 999;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 10px 0 12px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .nav-label {
+            font-size: 11px;
+            color: var(--light-text);
+        }
+
+        .nav-item.active .nav-label {
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        /* 隐藏文件输入 */
+        input[type="file"] {
+            display: none;
+        }
+
+        /* 响应式 */
+        @media (min-width: 768px) {
+            body {
+                max-width: 450px;
+                margin: 0 auto;
+                box-shadow: 0 0 30px rgba(0,0,0,0.15);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部 -->
+    <div class="header">
+        <h1>🎯 减肥自律打卡</h1>
+        <div class="subtitle">体重记录表 · 每天进步一点点</div>
+    </div>
+
+    <!-- 目标卡片 -->
+    <div class="goal-card">
+        <div class="goal-item">
+            <div class="goal-label">初始体重</div>
+            <div class="goal-value">
+                <input type="number" id="startWeight" placeholder="0.0" step="0.1">
+                <span class="goal-unit">kg</span>
+            </div>
+        </div>
+        <div class="goal-divider"></div>
+        <div class="goal-item">
+            <div class="goal-label">目标体重</div>
+            <div class="goal-value">
+                <input type="number" id="targetWeight" placeholder="0.0" step="0.1">
+                <span class="goal-unit">kg</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 页面容器 -->
+    <div class="page-container">
+        <!-- 打卡页 -->
+        <div class="page active" id="pageCheckin">
+            <!-- 日期导航 -->
+            <div class="card">
+                <div class="date-nav">
+                    <button class="date-btn" id="prevDay">◀</button>
+                    <div class="date-display">
+                        <div class="date-main" id="dateMain">2026年4月5日</div>
+                        <div class="date-sub" id="dateSub">周六 · 已打卡 0 天</div>
+                    </div>
+                    <button class="date-btn" id="nextDay">▶</button>
+                </div>
+                <div class="progress-section">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-info">
+                        <span class="progress-label">距离目标</span>
+                        <span class="progress-value" id="goalProgress">请先设置目标体重</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 体重记录 -->
+            <div class="card">
+                <div class="card-title">⚖️ 体重记录</div>
+                <div class="weight-grid">
+                    <div class="weight-box">
+                        <div class="weight-label">🌅 晨起体重</div>
+                        <input type="number" class="weight-input" id="morningWeight" placeholder="0.0" step="0.1">
+                        <div class="weight-change" id="morningChange"></div>
+                    </div>
+                    <div class="weight-box">
+                        <div class="weight-label">🌙 晚间体重</div>
+                        <input type="number" class="weight-input" id="eveningWeight" placeholder="0.0" step="0.1">
+                        <div class="weight-change" id="eveningChange"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 喝水打卡 -->
+            <div class="card">
+                <div class="card-title">💧 喝水打卡</div>
+                <div class="water-section">
+                    <div class="water-grid" id="waterCups"></div>
+                    <div class="water-info">
+                        <div class="water-count">已喝 <span id="waterCount">0</span>/8 杯</div>
+                        <div class="water-target">目标 2000ml</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 饮食记录 -->
+            <div class="card">
+                <div class="card-title">🍽️ 饮食记录</div>
+                <div class="option-grid" id="dietOptions">
+                    <button class="option-btn" data-value="less">
+                        <span class="icon">🥗</span>少吃了
+                    </button>
+                    <button class="option-btn" data-value="normal">
+                        <span class="icon">🍱</span>正常
+                    </button>
+                    <button class="option-btn" data-value="more">
+                        <span class="icon">🍔</span>多吃了
+                    </button>
+                </div>
+            </div>
+
+            <!-- 运动记录 -->
+            <div class="card">
+                <div class="card-title">🏃 运动记录</div>
+                <div class="option-grid two-col" id="exerciseOptions">
+                    <button class="option-btn" data-value="yes">
+                        <span class="icon">💪</span>运动了
+                    </button>
+                    <button class="option-btn" data-value="no">
+                        <span class="icon">😴</span>没运动
+                    </button>
+                </div>
+            </div>
+
+            <!-- 今日心情 -->
+            <div class="card">
+                <div class="card-title">😊 今日心情</div>
+                <div class="mood-grid" id="moodOptions">
+                    <button class="mood-btn" data-value="great">
+                        <span class="mood-icon">😄</span>
+                        <span class="mood-label">开心</span>
+                    </button>
+                    <button class="mood-btn" data-value="good">
+                        <span class="mood-icon">🙂</span>
+                        <span class="mood-label">不错</span>
+                    </button>
+                    <button class="mood-btn" data-value="normal">
+                        <span class="mood-icon">😐</span>
+                        <span class="mood-label">一般</span>
+                    </button>
+                    <button class="mood-btn" data-value="tired">
+                        <span class="mood-icon">😫</span>
+                        <span class="mood-label">疲惫</span>
+                    </button>
+                    <button class="mood-btn" data-value="sad">
+                        <span class="mood-icon">😢</span>
+                        <span class="mood-label">难过</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 今日感受 -->
+            <div class="card">
+                <div class="card-title">📝 今日感受</div>
+                <textarea class="diary-input" id="diary" placeholder="记录今天的感受、心情、小确幸..."></textarea>
+            </div>
+
+            <!-- 照片记录 -->
+            <div class="card">
+                <div class="card-title">📸 照片记录</div>
+                <div class="photo-grid">
+                    <div class="photo-box" id="photoFront">
+                        <div class="photo-placeholder">
+                            <div class="icon">📷</div>
+                            <div class="label">正面照</div>
+                        </div>
+                    </div>
+                    <div class="photo-box" id="photoSide">
+                        <div class="photo-placeholder">
+                            <div class="icon">📷</div>
+                            <div class="label">侧面照</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="photo-tip">💡 建议每周拍摄一次，记录身体变化<br>点击上传照片（需要相册权限）</div>
+                <input type="file" id="photoInput" accept="image/*">
+            </div>
+
+            <!-- 打卡按钮 -->
+            <button class="checkin-btn" id="checkinBtn">✨ 完成今日打卡</button>
+        </div>
+
+        <!-- 进度页 -->
+        <div class="page" id="pageProgress">
+            <div class="stats-card week">
+                <div class="stats-title">📊 本周数据</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="weekWeight">-0.0</div>
+                        <div class="stat-label">体重变化(kg)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="weekCheckins">0/7</div>
+                        <div class="stat-label">打卡天数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="weekWater">0</div>
+                        <div class="stat-label">喝水达标</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="stats-card month">
+                <div class="stats-title">📅 本月数据</div>
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value" id="monthWeight">-0.0</div>
+                        <div class="stat-label">体重变化(kg)</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="monthCheckins">0</div>
+                        <div class="stat-label">打卡天数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="monthExercise">0</div>
+                        <div class="stat-label">运动次数</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">📈 体重趋势</div>
+                <div class="chart-box">
+                    <canvas id="weightChart"></canvas>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">💾 数据管理</div>
+                <button class="data-btn" id="exportBtn">📤 导出数据备份</button>
+                <button class="data-btn" id="importBtn">📥 导入数据恢复</button>
+                <input type="file" id="importInput" accept=".json">
+                <div class="data-tip">
+                    💡 备份数据可防止记录丢失<br>
+                    换手机时导入备份即可恢复
+                </div>
+            </div>
+        </div>
+
+        <!-- 成就页 -->
+        <div class="page" id="pageAchieve">
+            <div class="badge-section">
+                <div class="badge-title">🏆 打卡成就</div>
+                <div class="badge-grid" id="checkinBadges"></div>
+            </div>
+
+            <div class="badge-section">
+                <div class="badge-title">💪 减重里程碑</div>
+                <div class="badge-grid" id="weightBadges"></div>
+            </div>
+
+            <div class="badge-section">
+                <div class="badge-title">✨ 习惯成就</div>
+                <div class="badge-grid" id="habitBadges"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <button class="nav-item active" data-page="checkin">
+            <span class="nav-icon">✅</span>
+            <span class="nav-label">打卡</span>
+        </button>
+        <button class="nav-item" data-page="progress">
+            <span class="nav-icon">📊</span>
+            <span class="nav-label">进度</span>
+        </button>
+        <button class="nav-item" data-page="achieve">
+            <span class="nav-icon">🏆</span>
+            <span class="nav-label">成就</span>
+        </button>
+    </div>
+
+    <!-- 弹窗 -->
+    <div class="modal" id="weekModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎉</div>
+            <div class="modal-title">一周打卡完成!</div>
+            <div class="modal-message">太棒了！你坚持了一整周<br>迈出了成功的第一步！<br>自律的你最美丽！</div>
+            <div class="modal-stats">
+                <div class="modal-stat-row">
+                    <span class="modal-stat-label">本周减重</span>
+                    <span class="modal-stat-value" id="modalWeekWeight">-0.5kg</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span class="modal-stat-label">打卡天数</span>
+                    <span class="modal-stat-value" id="modalWeekDays">7天</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span class="modal-stat-label">运动次数</span>
+                    <span class="modal-stat-value" id="modalWeekExercise">5次</span>
+                </div>
+            </div>
+            <button class="modal-close" id="closeWeekModal">继续加油 💪</button>
+        </div>
+    </div>
+
+    <div class="modal" id="monthModal">
+        <div class="modal-content">
+            <div class="modal-icon">🌟</div>
+            <div class="modal-title">月度总结</div>
+            <div class="modal-message">恭喜你完成了一个月的自律打卡！<br>每一滴汗水都是值得的！</div>
+            <div class="modal-stats">
+                <div class="modal-stat-row">
+                    <span class="modal-stat-label">本月减重</span>
+                    <span class="modal-stat-value" id="modalMonthWeight">-2.0kg</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span class="modal-stat-label">打卡天数</span>
+                    <span class="modal-stat-value" id="modalMonthDays">25天</span>
+                </div>
+                <div class="modal-stat-row">
+                    <span class="modal-stat-label">喝水达标</span>
+                    <span class="modal-stat-value" id="modalMonthWater">20天</span>
+                </div>
+            </div>
+            <button class="modal-close" id="closeMonthModal">继续前行 ⭐</button>
+        </div>
+    </div>
+
+    <div class="modal" id="successModal">
+        <div class="modal-content">
+            <div class="modal-icon">✨</div>
+            <div class="modal-title" id="successTitle">今日打卡成功!</div>
+            <div class="modal-message" id="successMsg">又向目标迈进了一步！</div>
+            <button class="modal-close" id="closeSuccessModal">太棒了</button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    (function() {
+        'use strict';
+        
+        // 数据
+        var appData = {
+            startWeight: 0,
+            targetWeight: 0,
+            startDate: null,
+            records: {}
+        };
+        
+        var currentDate = new Date();
+        var photoTarget = null;
+        var saveTimeout = null;
+        var isInitialized = false;
+        
+        // 工具函数
+        function formatDate(date) {
+            var y = date.getFullYear();
+            var m = String(date.getMonth() + 1).padStart(2, '0');
+            var d = String(date.getDate()).padStart(2, '0');
+            return y + '-' + m + '-' + d;
+        }
+        
+        function getDateKey(date) {
+            return formatDate(date);
+        }
+        
+        // 加载数据
+        function loadData() {
+            try {
+                var saved = localStorage.getItem('weightTracker');
+                if (saved) {
+                    appData = JSON.parse(saved);
+                    if (appData.startDate) {
+                        currentDate = new Date(appData.startDate);
+                    }
+                }
+            } catch(e) {
+                console.log('Load error:', e);
+            }
+            
+            document.getElementById('startWeight').value = appData.startWeight || '';
+            document.getElementById('targetWeight').value = appData.targetWeight || '';
+        }
+        
+        // 保存数据（带防抖，避免频繁写入）
+        function saveData() {
+            appData.startWeight = parseFloat(document.getElementById('startWeight').value) || 0;
+            appData.targetWeight = parseFloat(document.getElementById('targetWeight').value) || 0;
+            
+            if (!appData.startDate) {
+                appData.startDate = formatDate(currentDate);
+            }
+            
+            // 防抖：延迟保存，避免频繁写入
+            if (saveTimeout) {
+                clearTimeout(saveTimeout);
+            }
+            saveTimeout = setTimeout(function() {
+                try {
+                    localStorage.setItem('weightTracker', JSON.stringify(appData));
+                } catch(e) {
+                    console.log('保存失败:', e);
+                    // 存储空间不足时尝试清理旧数据
+                    if (e.name === 'QuotaExceededError') {
+                        alert('存储空间不足，请导出备份后清理部分数据');
+                    }
+                }
+            }, 200);
+        }
+        
+        // 立即保存（用于重要操作）
+        function saveDataImmediate() {
+            try {
+                localStorage.setItem('weightTracker', JSON.stringify(appData));
+            } catch(e) {
+                console.log('保存失败:', e);
+            }
+        }
+        
+        // 更新日期显示
+        function updateDateDisplay() {
+            var y = currentDate.getFullYear();
+            var m = currentDate.getMonth() + 1;
+            var d = currentDate.getDate();
+            var weekDays = ['周日', '周一', '周二', '周三', '周四', '周五', '周六'];
+            var weekDay = weekDays[currentDate.getDay()];
+            
+            document.getElementById('dateMain').textContent = y + '年' + m + '月' + d + '日';
+            
+            var checkinDays = Object.keys(appData.records).filter(function(key) {
+                return appData.records[key] && appData.records[key].morningWeight;
+            }).length;
+            
+            document.getElementById('dateSub').textContent = weekDay + ' · 已打卡 ' + checkinDays + ' 天';
+        }
+        
+        // 更新进度
+        function updateProgress() {
+            var currentWeight = null;
+            var sortedKeys = Object.keys(appData.records).sort();
+            
+            for (var i = sortedKeys.length - 1; i >= 0; i--) {
+                var r = appData.records[sortedKeys[i]];
+                if (r && r.morningWeight) {
+                    currentWeight = r.morningWeight;
+                    break;
+                }
+            }
+            
+            var goalProgress = document.getElementById('goalProgress');
+            var progressFill = document.getElementById('progressFill');
+            
+            if (!appData.targetWeight || !appData.startWeight) {
+                goalProgress.textContent = '请先设置目标体重';
+                progressFill.style.width = '0%';
+            } else if (!currentWeight) {
+                goalProgress.textContent = '请填写体重开始打卡';
+                progressFill.style.width = '0%';
+            } else {
+                var totalToLose = appData.startWeight - appData.targetWeight;
+                var lost = appData.startWeight - currentWeight;
+                var remaining = currentWeight - appData.targetWeight;
+                
+                if (totalToLose > 0) {
+                    var percent = Math.min(100, Math.max(0, (lost / totalToLose) * 100));
+                    progressFill.style.width = percent.toFixed(1) + '%';
+                }
+                
+                if (remaining > 0) {
+                    goalProgress.textContent = '还差 ' + remaining.toFixed(1) + ' kg';
+                } else {
+                    goalProgress.textContent = '🎉 已达成目标！';
+                    progressFill.style.width = '100%';
+                }
+            }
+        }
+        
+        // 初始化水杯
+        function initWaterCups() {
+            var container = document.getElementById('waterCups');
+            container.innerHTML = '';
+            
+            for (var i = 0; i < 8; i++) {
+                var cup = document.createElement('div');
+                cup.className = 'water-cup';
+                cup.innerHTML = '💧';
+                cup.setAttribute('data-index', i);
+                cup.onclick = function() {
+                    var idx = parseInt(this.getAttribute('data-index'));
+                    toggleWater(idx);
+                };
+                container.appendChild(cup);
+            }
+        }
+        
+        // 切换水杯
+        function toggleWater(index) {
+            var key = getDateKey(currentDate);
+            if (!appData.records[key]) {
+                appData.records[key] = {};
+            }
+            
+            var current = appData.records[key].water || 0;
+            
+            if (index < current) {
+                appData.records[key].water = index;
+            } else {
+                appData.records[key].water = index + 1;
+            }
+            
+            saveData();
+            loadDayData();
+        }
+        
+        // 加载当天数据
+        function loadDayData() {
+            var key = getDateKey(currentDate);
+            var record = appData.records[key] || {};
+            
+            // 体重
+            document.getElementById('morningWeight').value = record.morningWeight || '';
+            document.getElementById('eveningWeight').value = record.eveningWeight || '';
+            
+            updateWeightChange();
+            
+            // 水杯
+            var water = record.water || 0;
+            document.getElementById('waterCount').textContent = water;
+            
+            var cups = document.querySelectorAll('.water-cup');
+            for (var i = 0; i < cups.length; i++) {
+                if (i < water) {
+                    cups[i].classList.add('filled');
+                } else {
+                    cups[i].classList.remove('filled');
+                }
+            }
+            
+            // 饮食
+            updateOptionSelection('dietOptions', record.diet);
+            
+            // 运动
+            updateOptionSelection('exerciseOptions', record.exercise);
+            
+            // 心情
+            updateMoodSelection(record.mood);
+            
+            // 日记
+            document.getElementById('diary').value = record.diary || '';
+            
+            // 照片
+            var photoFront = document.getElementById('photoFront');
+            var photoSide = document.getElementById('photoSide');
+            
+            if (record.photoFront) {
+                photoFront.innerHTML = '<img src="' + record.photoFront + '">';
+            } else {
+                photoFront.innerHTML = '<div class="photo-placeholder"><div class="icon">📷</div><div class="label">正面照</div></div>';
+            }
+            
+            if (record.photoSide) {
+                photoSide.innerHTML = '<img src="' + record.photoSide + '">';
+            } else {
+                photoSide.innerHTML = '<div class="photo-placeholder"><div class="icon">📷</div><div class="label">侧面照</div></div>';
+            }
+        }
+        
+        function updateOptionSelection(containerId, value) {
+            var btns = document.querySelectorAll('#' + containerId + ' .option-btn');
+            for (var i = 0; i < btns.length; i++) {
+                if (btns[i].getAttribute('data-value') === value) {
+                    btns[i].classList.add('selected');
+                } else {
+                    btns[i].classList.remove('selected');
+                }
+            }
+        }
+        
+        function updateMoodSelection(value) {
+            var btns = document.querySelectorAll('#moodOptions .mood-btn');
+            for (var i = 0; i < btns.length; i++) {
+                if (btns[i].getAttribute('data-value') === value) {
+                    btns[i].classList.add('selected');
+                } else {
+                    btns[i].classList.remove('selected');
+                }
+            }
+        }
+        
+        // 更新体重变化
+        function updateWeightChange() {
+            var key = getDateKey(currentDate);
+            var record = appData.records[key] || {};
+            
+            var prevDate = new Date(currentDate);
+            prevDate.setDate(prevDate.getDate() - 1);
+            var prevKey = getDateKey(prevDate);
+            var prevRecord = appData.records[prevKey] || {};
+            
+            var morningChange = document.getElementById('morningChange');
+            var eveningChange = document.getElementById('eveningChange');
+            
+            if (record.morningWeight && prevRecord.morningWeight) {
+                var diff = (record.morningWeight - prevRecord.morningWeight).toFixed(1);
+                if (diff < 0) {
+                    morningChange.textContent = '↓ ' + Math.abs(diff) + 'kg';
+                    morningChange.className = 'weight-change down';
+                } else if (diff > 0) {
+                    morningChange.textContent = '↑ ' + diff + 'kg';
+                    morningChange.className = 'weight-change up';
+                } else {
+                    morningChange.textContent = '→ 持平';
+                    morningChange.className = 'weight-change';
+                }
+            } else {
+                morningChange.textContent = '';
+            }
+            
+            if (record.eveningWeight && record.morningWeight) {
+                var diff2 = (record.eveningWeight - record.morningWeight).toFixed(1);
+                if (diff2 > 0) {
+                    eveningChange.textContent = '日增 +' + diff2 + 'kg';
+                    eveningChange.className = 'weight-change up';
+                } else if (diff2 < 0) {
+                    eveningChange.textContent = '日减 ' + diff2 + 'kg';
+                    eveningChange.className = 'weight-change down';
+                } else {
+                    eveningChange.textContent = '';
+                }
+            } else {
+                eveningChange.textContent = '';
+            }
+        }
+        
+        // 更新统计
+        function updateStats() {
+            // 本周
+            var weekStart = getWeekStart(currentDate);
+            var weekWeight = null;
+            var weekWeightEnd = null;
+            var weekCheckins = 0;
+            var weekWater = 0;
+            
+            for (var i = 0; i < 7; i++) {
+                var d = new Date(weekStart);
+                d.setDate(d.getDate() + i);
+                var key = getDateKey(d);
+                var r = appData.records[key];
+                if (r) {
+                    if (r.morningWeight) {
+                        if (weekWeight === null) weekWeight = r.morningWeight;
+                        weekWeightEnd = r.morningWeight;
+                        weekCheckins++;
+                    }
+                    if (r.water >= 8) weekWater++;
+                }
+            }
+            
+            var wChange = weekWeight && weekWeightEnd ? (weekWeightEnd - weekWeight).toFixed(1) : '0.0';
+            document.getElementById('weekWeight').textContent = (parseFloat(wChange) > 0 ? '+' : '') + wChange;
+            document.getElementById('weekCheckins').textContent = weekCheckins + '/7';
+            document.getElementById('weekWater').textContent = weekWater;
+            
+            // 本月
+            var monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            var monthWeight = null;
+            var monthWeightEnd = null;
+            var monthCheckins = 0;
+            var monthExercise = 0;
+            
+            Object.keys(appData.records).forEach(function(key) {
+                var d = new Date(key);
+                var r = appData.records[key];
+                if (d >= monthStart && d <= currentDate && r) {
+                    if (r.morningWeight) {
+                        if (monthWeight === null) monthWeight = r.morningWeight;
+                        monthWeightEnd = r.morningWeight;
+                        monthCheckins++;
+                    }
+                    if (r.exercise === 'yes') monthExercise++;
+                }
+            });
+            
+            var mChange = monthWeight && monthWeightEnd ? (monthWeightEnd - monthWeight).toFixed(1) : '0.0';
+            document.getElementById('monthWeight').textContent = (parseFloat(mChange) > 0 ? '+' : '') + mChange;
+            document.getElementById('monthCheckins').textContent = monthCheckins;
+            document.getElementById('monthExercise').textContent = monthExercise;
+        }
+        
+        function getWeekStart(date) {
+            var d = new Date(date);
+            var day = d.getDay();
+            var diff = d.getDate() - day + (day === 0 ? -6 : 1);
+            return new Date(d.setDate(diff));
+        }
+        
+        // 图表
+        function updateChart() {
+            var ctx = document.getElementById('weightChart').getContext('2d');
+            
+            var labels = [];
+            var morningData = [];
+            var eveningData = [];
+            
+            for (var i = 29; i >= 0; i--) {
+                var d = new Date();
+                d.setDate(d.getDate() - i);
+                var key = getDateKey(d);
+                var r = appData.records[key];
+                
+                labels.push((d.getMonth() + 1) + '/' + d.getDate());
+                morningData.push(r ? r.morningWeight : null);
+                eveningData.push(r ? r.eveningWeight : null);
+            }
+            
+            if (window.weightChart) {
+                window.weightChart.destroy();
+            }
+            
+            window.weightChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: '晨起',
+                        data: morningData,
+                        borderColor: '#7ECEC0',
+                        backgroundColor: 'rgba(126, 206, 192, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        spanGaps: true,
+                        pointRadius: 3
+                    }, {
+                        label: '晚间',
+                        data: eveningData,
+                        borderColor: '#FFB5BA',
+                        backgroundColor: 'rgba(255, 181, 186, 0.1)',
+                        tension: 0.3,
+                        fill: true,
+                        spanGaps: true,
+                        pointRadius: 3
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom',
+                            labels: { boxWidth: 10, padding: 8, font: { size: 10 } }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            grid: { color: 'rgba(0,0,0,0.05)' },
+                            ticks: { font: { size: 10 } }
+                        },
+                        x: {
+                            grid: { display: false },
+                            ticks: { font: { size: 9 }, maxTicksLimit: 10 }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 徽章
+        function updateBadges() {
+            var checkinBadges = [
+                { id: 'first', name: '首次打卡', icon: '🎯', cond: function() { return Object.keys(appData.records).length >= 1; } },
+                { id: 'week', name: '坚持一周', icon: '🔥', cond: function() { return getConsecutiveDays() >= 7; } },
+                { id: 'week2', name: '坚持两周', icon: '💪', cond: function() { return getConsecutiveDays() >= 14; } },
+                { id: 'month', name: '坚持一月', icon: '⭐', cond: function() { return getConsecutiveDays() >= 30; } },
+                { id: 'month3', name: '坚持三月', icon: '👑', cond: function() { return getConsecutiveDays() >= 90; } },
+                { id: 'year', name: '坚持一年', icon: '🏆', cond: function() { return getConsecutiveDays() >= 365; } }
+            ];
+            
+            var weightBadges = [
+                { id: 'w1', name: '减重1kg', icon: '🥉', cond: function() { return getTotalWeightLost() >= 1; } },
+                { id: 'w2', name: '减重2kg', icon: '🥈', cond: function() { return getTotalWeightLost() >= 2; } },
+                { id: 'w3', name: '减重3kg', icon: '🥇', cond: function() { return getTotalWeightLost() >= 3; } },
+                { id: 'w5', name: '减重5kg', icon: '🏅', cond: function() { return getTotalWeightLost() >= 5; } },
+                { id: 'w10', name: '减重10kg', icon: '💎', cond: function() { return getTotalWeightLost() >= 10; } },
+                { id: 'w15', name: '减重15kg', icon: '👑', cond: function() { return getTotalWeightLost() >= 15; } }
+            ];
+            
+            var habitBadges = [
+                { id: 'h1', name: '喝水达人', icon: '💧', cond: function() { return getWaterDays() >= 30; } },
+                { id: 'h2', name: '运动先锋', icon: '🏃', cond: function() { return getExerciseDays() >= 30; } },
+                { id: 'h3', name: '清淡饮食', icon: '🥗', cond: function() { return getDietDays() >= 30; } },
+                { id: 'h4', name: '自律达人', icon: '✨', cond: function() { return getConsecutiveDays() >= 100; } },
+                { id: 'h5', name: '心态满分', icon: '😊', cond: function() { return getGoodMoodDays() >= 30; } },
+                { id: 'h6', name: '完美一周', icon: '🌟', cond: function() { return getPerfectWeek(); } }
+            ];
+            
+            renderBadges('checkinBadges', checkinBadges);
+            renderBadges('weightBadges', weightBadges);
+            renderBadges('habitBadges', habitBadges);
+        }
+        
+        function renderBadges(containerId, badges) {
+            var container = document.getElementById(containerId);
+            container.innerHTML = '';
+            
+            for (var i = 0; i < badges.length; i++) {
+                var badge = badges[i];
+                var unlocked = badge.cond();
+                var el = document.createElement('div');
+                el.className = 'badge-item' + (unlocked ? ' unlocked' : '');
+                el.innerHTML = '<div class="badge-icon">' + badge.icon + '</div><div class="badge-name">' + badge.name + '</div>';
+                container.appendChild(el);
+            }
+        }
+        
+        function getConsecutiveDays() {
+            var count = 0;
+            var today = new Date();
+            
+            for (var i = 0; i < 365; i++) {
+                var d = new Date(today);
+                d.setDate(d.getDate() - i);
+                var key = getDateKey(d);
+                var r = appData.records[key];
+                if (r && r.morningWeight) {
+                    count++;
+                } else {
+                    break;
+                }
+            }
+            return count;
+        }
+        
+        function getTotalWeightLost() {
+            var sortedKeys = Object.keys(appData.records).sort();
+            if (sortedKeys.length < 1) return 0;
+            
+            var firstKey = sortedKeys[0];
+            var lastKey = sortedKeys[sortedKeys.length - 1];
+            var firstWeight = appData.records[firstKey] ? appData.records[firstKey].morningWeight : null;
+            var lastWeight = appData.records[lastKey] ? appData.records[lastKey].morningWeight : null;
+            
+            if (firstWeight && lastWeight) {
+                return Math.max(0, firstWeight - lastWeight);
+            }
+            return 0;
+        }
+        
+        function getWaterDays() {
+            var count = 0;
+            Object.keys(appData.records).forEach(function(key) {
+                if (appData.records[key] && appData.records[key].water >= 8) count++;
+            });
+            return count;
+        }
+        
+        function getExerciseDays() {
+            var count = 0;
+            Object.keys(appData.records).forEach(function(key) {
+                if (appData.records[key] && appData.records[key].exercise === 'yes') count++;
+            });
+            return count;
+        }
+        
+        function getDietDays() {
+            var count = 0;
+            Object.keys(appData.records).forEach(function(key) {
+                if (appData.records[key] && appData.records[key].diet === 'less') count++;
+            });
+            return count;
+        }
+        
+        function getGoodMoodDays() {
+            var count = 0;
+            Object.keys(appData.records).forEach(function(key) {
+                var r = appData.records[key];
+                if (r && (r.mood === 'great' || r.mood === 'good')) count++;
+            });
+            return count;
+        }
+        
+        function getPerfectWeek() {
+            var weekStart = getWeekStart(new Date());
+            for (var i = 0; i < 7; i++) {
+                var d = new Date(weekStart);
+                d.setDate(d.getDate() + i);
+                var key = getDateKey(d);
+                var r = appData.records[key];
+                if (!r || !r.morningWeight || r.water < 8 || r.exercise !== 'yes') {
+                    return false;
+                }
+            }
+            return true;
+        }
+        
+        // 周总结
+        function showWeekSummary() {
+            var weekStart = getWeekStart(currentDate);
+            var firstWeight = null, lastWeight = null;
+            var days = 0, exercise = 0;
+            
+            for (var i = 0; i < 7; i++) {
+                var d = new Date(weekStart);
+                d.setDate(d.getDate() + i);
+                var key = getDateKey(d);
+                var r = appData.records[key];
+                if (r && r.morningWeight) {
+                    if (!firstWeight) firstWeight = r.morningWeight;
+                    lastWeight = r.morningWeight;
+                    days++;
+                }
+                if (r && r.exercise === 'yes') exercise++;
+            }
+            
+            var change = firstWeight && lastWeight ? (lastWeight - firstWeight).toFixed(1) : '0.0';
+            
+            document.getElementById('modalWeekWeight').textContent = (parseFloat(change) > 0 ? '+' : '') + change + 'kg';
+            document.getElementById('modalWeekDays').textContent = days + '天';
+            document.getElementById('modalWeekExercise').textContent = exercise + '次';
+            document.getElementById('weekModal').classList.add('show');
+        }
+        
+        // 月总结
+        function showMonthSummary() {
+            var monthStart = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
+            var firstWeight = null, lastWeight = null;
+            var days = 0, water = 0;
+            
+            Object.keys(appData.records).forEach(function(key) {
+                var d = new Date(key);
+                var r = appData.records[key];
+                if (d >= monthStart && d <= currentDate) {
+                    if (r && r.morningWeight) {
+                        if (!firstWeight) firstWeight = r.morningWeight;
+                        lastWeight = r.morningWeight;
+                        days++;
+                    }
+                    if (r && r.water >= 8) water++;
+                }
+            });
+            
+            var change = firstWeight && lastWeight ? (lastWeight - firstWeight).toFixed(1) : '0.0';
+            
+            document.getElementById('modalMonthWeight').textContent = (parseFloat(change) > 0 ? '+' : '') + change + 'kg';
+            document.getElementById('modalMonthDays').textContent = days + '天';
+            document.getElementById('modalMonthWater').textContent = water + '天';
+            document.getElementById('monthModal').classList.add('show');
+        }
+        
+        // 切换页面
+        function switchPage(pageName) {
+            var pages = document.querySelectorAll('.page');
+            for (var i = 0; i < pages.length; i++) {
+                pages[i].classList.remove('active');
+            }
+            
+            var navItems = document.querySelectorAll('.nav-item');
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].classList.remove('active');
+            }
+            
+            var pageId = 'page' + pageName.charAt(0).toUpperCase() + pageName.slice(1);
+            document.getElementById(pageId).classList.add('active');
+            
+            var activeNav = document.querySelector('.nav-item[data-page="' + pageName + '"]');
+            if (activeNav) activeNav.classList.add('active');
+            
+            if (pageName === 'progress') {
+                updateStats();
+                updateChart();
+            } else if (pageName === 'achieve') {
+                updateBadges();
+            }
+        }
+        
+        // 绑定事件
+        function bindEvents() {
+            // 日期导航
+            document.getElementById('prevDay').onclick = function() {
+                currentDate.setDate(currentDate.getDate() - 1);
+                updateDateDisplay();
+                loadDayData();
+            };
+            
+            document.getElementById('nextDay').onclick = function() {
+                currentDate.setDate(currentDate.getDate() + 1);
+                updateDateDisplay();
+                loadDayData();
+            };
+            
+            // 底部导航
+            var navItems = document.querySelectorAll('.nav-item');
+            for (var i = 0; i < navItems.length; i++) {
+                navItems[i].onclick = function() {
+                    var page = this.getAttribute('data-page');
+                    switchPage(page);
+                };
+            }
+            
+            // 饮食选择
+            var dietBtns = document.querySelectorAll('#dietOptions .option-btn');
+            for (var i = 0; i < dietBtns.length; i++) {
+                dietBtns[i].onclick = function() {
+                    var btns = document.querySelectorAll('#dietOptions .option-btn');
+                    for (var j = 0; j < btns.length; j++) {
+                        btns[j].classList.remove('selected');
+                    }
+                    this.classList.add('selected');
+                    
+                    var key = getDateKey(currentDate);
+                    if (!appData.records[key]) appData.records[key] = {};
+                    appData.records[key].diet = this.getAttribute('data-value');
+                    saveData();
+                };
+            }
+            
+            // 运动选择
+            var exerciseBtns = document.querySelectorAll('#exerciseOptions .option-btn');
+            for (var i = 0; i < exerciseBtns.length; i++) {
+                exerciseBtns[i].onclick = function() {
+                    var btns = document.querySelectorAll('#exerciseOptions .option-btn');
+                    for (var j = 0; j < btns.length; j++) {
+                        btns[j].classList.remove('selected');
+                    }
+                    this.classList.add('selected');
+                    
+                    var key = getDateKey(currentDate);
+                    if (!appData.records[key]) appData.records[key] = {};
+                    appData.records[key].exercise = this.getAttribute('data-value');
+                    saveData();
+                };
+            }
+            
+            // 心情选择
+            var moodBtns = document.querySelectorAll('#moodOptions .mood-btn');
+            for (var i = 0; i < moodBtns.length; i++) {
+                moodBtns[i].onclick = function() {
+                    var btns = document.querySelectorAll('#moodOptions .mood-btn');
+                    for (var j = 0; j < btns.length; j++) {
+                        btns[j].classList.remove('selected');
+                    }
+                    this.classList.add('selected');
+                    
+                    var key = getDateKey(currentDate);
+                    if (!appData.records[key]) appData.records[key] = {};
+                    appData.records[key].mood = this.getAttribute('data-value');
+                    saveData();
+                };
+            }
+            
+            // 体重输入
+            document.getElementById('morningWeight').oninput = function() {
+                var key = getDateKey(currentDate);
+                if (!appData.records[key]) appData.records[key] = {};
+                appData.records[key].morningWeight = parseFloat(this.value) || null;
+                saveData();
+                updateWeightChange();
+                updateProgress();
+                updateDateDisplay();
+            };
+            
+            document.getElementById('eveningWeight').oninput = function() {
+                var key = getDateKey(currentDate);
+                if (!appData.records[key]) appData.records[key] = {};
+                appData.records[key].eveningWeight = parseFloat(this.value) || null;
+                saveData();
+                updateWeightChange();
+            };
+            
+            // 日记
+            document.getElementById('diary').oninput = function() {
+                var key = getDateKey(currentDate);
+                if (!appData.records[key]) appData.records[key] = {};
+                appData.records[key].diary = this.value;
+                saveData();
+            };
+            
+            // 目标
+            document.getElementById('startWeight').oninput = function() {
+                saveData();
+                updateProgress();
+            };
+            
+            document.getElementById('targetWeight').oninput = function() {
+                saveData();
+                updateProgress();
+            };
+            
+            // 照片
+            document.getElementById('photoFront').onclick = function() {
+                photoTarget = 'front';
+                document.getElementById('photoInput').click();
+            };
+            
+            document.getElementById('photoSide').onclick = function() {
+                photoTarget = 'side';
+                document.getElementById('photoInput').click();
+            };
+            
+            document.getElementById('photoInput').onchange = function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    var key = getDateKey(currentDate);
+                    if (!appData.records[key]) appData.records[key] = {};
+                    
+                    if (photoTarget === 'front') {
+                        appData.records[key].photoFront = evt.target.result;
+                        document.getElementById('photoFront').innerHTML = '<img src="' + evt.target.result + '">';
+                    } else {
+                        appData.records[key].photoSide = evt.target.result;
+                        document.getElementById('photoSide').innerHTML = '<img src="' + evt.target.result + '">';
+                    }
+                    saveData();
+                };
+                reader.readAsDataURL(file);
+            };
+            
+            // 打卡按钮
+            document.getElementById('checkinBtn').onclick = function() {
+                var key = getDateKey(currentDate);
+                var r = appData.records[key];
+                
+                if (!r || !r.morningWeight) {
+                    alert('请先填写晨起体重哦～');
+                    return;
+                }
+                
+                r.checked = true;
+                r.checkTime = new Date().toISOString();
+                saveData();
+                
+                var consecutive = getConsecutiveDays();
+                var title = '今日打卡成功!';
+                var msg = '又向目标迈进了一步！';
+                
+                if (consecutive % 7 === 0 && consecutive > 0) {
+                    showWeekSummary();
+                } else if (consecutive % 30 === 0 && consecutive > 0) {
+                    showMonthSummary();
+                } else {
+                    if (consecutive > 1) {
+                        title = '连续打卡' + consecutive + '天!';
+                        msg = '坚持就是胜利，你太棒了！';
+                    }
+                    document.getElementById('successTitle').textContent = title;
+                    document.getElementById('successMsg').textContent = msg;
+                    document.getElementById('successModal').classList.add('show');
+                }
+                
+                updateProgress();
+                updateDateDisplay();
+            };
+            
+            // 关闭弹窗
+            document.getElementById('closeSuccessModal').onclick = function() {
+                document.getElementById('successModal').classList.remove('show');
+            };
+            
+            document.getElementById('closeWeekModal').onclick = function() {
+                document.getElementById('weekModal').classList.remove('show');
+            };
+            
+            document.getElementById('closeMonthModal').onclick = function() {
+                document.getElementById('monthModal').classList.remove('show');
+            };
+            
+            // 导出
+            document.getElementById('exportBtn').onclick = function() {
+                var dataStr = JSON.stringify(appData, null, 2);
+                var blob = new Blob([dataStr], { type: 'application/json' });
+                var url = URL.createObjectURL(blob);
+                var a = document.createElement('a');
+                a.href = url;
+                a.download = '减肥打卡记录_' + new Date().toLocaleDateString() + '.json';
+                a.click();
+                URL.revokeObjectURL(url);
+            };
+            
+            // 导入
+            document.getElementById('importBtn').onclick = function() {
+                document.getElementById('importInput').click();
+            };
+            
+            document.getElementById('importInput').onchange = function(e) {
+                var file = e.target.files[0];
+                if (!file) return;
+                
+                var reader = new FileReader();
+                reader.onload = function(evt) {
+                    try {
+                        var data = JSON.parse(evt.target.result);
+                        appData = data;
+                        saveData();
+                        location.reload();
+                    } catch (err) {
+                        alert('文件格式错误，导入失败');
+                    }
+                };
+                reader.readAsText(file);
+            };
+        }
+        
+        // 初始化
+        function init() {
+            loadData();
+            updateDateDisplay();
+            updateProgress();
+            initWaterCups();
+            loadDayData();
+            bindEvents();
+        }
+        
+        // DOM加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+    </script>
+</body>
+</html>
